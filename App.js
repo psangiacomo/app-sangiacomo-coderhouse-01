@@ -6,59 +6,61 @@
  * @flow strict-local
  */
 
-import {
-  Colors,
-  Header,
-} from 'react-native/Libraries/NewAppScreen';
-import {
-  SafeAreaView,
-  ScrollView,
-  StatusBar,
-  StyleSheet,
-  Text,
-  View,
-  useColorScheme,
-} from 'react-native';
+import React, {useState} from 'react';
+import {StyleSheet, Text, View} from 'react-native';
 
-import type {Node} from 'react';
-import React from 'react';
+import AddItem from './components/molecules/AddItem';
+import List from './components/molecules/List';
 
-const App: () => Node = () => {
-  const isDarkMode = useColorScheme() === 'dark';
+const App = () => {
+  
+  
+  const [textItem, setTextItem] = useState('');
+  const [itemList, setItemList] = useState([]);
 
-  const backgroundStyle = {
-    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
+  const onChangeTextAddItem = t => setTextItem(t);
+
+  const onPressAddItem = () => {
+    setItemList(currentItems => [...currentItems, {id: Math.random().toString(), value: textItem}]);
+    //vuelvo a poner en vacío
+    setTextItem('');
+  };
+
+  const onPressList = id => {
+    setItemList(currentItems => currentItems.filter(item => item.id !== id));
   };
 
   return (
-    <SafeAreaView style={backgroundStyle}>
-      <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
-      <ScrollView
-        contentInsetAdjustmentBehavior="automatic"
-        style={backgroundStyle}>
-        <Header />
-        <View
-          style={{
-            backgroundColor: isDarkMode ? Colors.black : Colors.white,
-          }}>
-          <Text
-            style={[
-              styles.sectionTitle,
-              {
-                color: isDarkMode ? Colors.white : Colors.black,
-              },
-            ]}>Hola, Coder!
-          </Text>
-        </View>
-      </ScrollView>
-    </SafeAreaView>
+    <View style={styles.appContainer}>
+      <Text style={styles.title}>App listado ítems</Text>
+      <AddItem
+        onChangeText={onChangeTextAddItem}
+        onPress={onPressAddItem}
+        value={textItem}
+      />
+      <View style={styles.itemListContainer}>
+        <List itemList={itemList} onPress={onPressList} />
+      </View>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
+  appContainer: {
+    flex: 1,
+    padding: 5,
+  },
+  title: {
+    color: '#800080',
+    fontWeight: 'bold',
+    fontSize: 20,
+    textAlign: 'center',
+    paddingBottom: 15,
+    paddingTop: 4,
+  },
+  itemListContainer: {
+    flex: 1,
+    margin: 25,
   },
 });
 
